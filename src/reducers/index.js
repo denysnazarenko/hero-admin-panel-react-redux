@@ -3,7 +3,7 @@ const initialState = {
   heroesLoadingStatus: 'idle',
   filters: [],
   filtersLoadingStatus: 'idle',
-  deleteHeroeId: ''
+  deleteHeroId: '',
 }
 
 const reducer = (state = initialState, action) => {
@@ -40,11 +40,16 @@ const reducer = (state = initialState, action) => {
         ...state,
         filtersLoadingStatus: 'error'
       }
-    case 'DELETE_HEROE':
+    case 'DELETE_HERO':
       return {
         ...state,
-        deleteHeroeId: action.payload,
+        deleteHeroId: action.payload,
         heroes: state.heroes.filter(hero => hero.id !== action.payload)
+      }
+    case 'HERO_CREATED':
+      return {
+        ...state,
+        heroes: [...state.heroes, action.payload]
       }
     default: return state
   }

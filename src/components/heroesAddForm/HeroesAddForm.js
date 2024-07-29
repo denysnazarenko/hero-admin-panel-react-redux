@@ -1,8 +1,10 @@
 import { useHttp } from "../../hooks/http.hook";
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { filtersFetching, filtersFetched, filtersFetchingError } from '../../actions';
+import { filtersFetching, filtersFetched, filtersFetchingError, heroCreated } from '../../actions';
+import { v4 as uuidv4 } from "uuid";
+import Spinner from '../spinner/Spinner';
 
 // Задача для этого компонента:
 // Реализовать создание нового героя с введенными данными. Он должен попадать
@@ -15,6 +17,10 @@ import { filtersFetching, filtersFetched, filtersFetchingError } from '../../act
 // данных из фильтров
 
 const HeroesAddForm = () => {
+  const [heroName, setHeroName] = useState('');
+  const [heroDescription, setHeroDescription] = useState('');
+  const [heroElement, setHeroElement] = useState('');
+
   const { filters, filtersLoadingStatus } = useSelector(state => state);
   const dispatch = useDispatch();
   const { request } = useHttp();
@@ -28,8 +34,44 @@ const HeroesAddForm = () => {
     // eslint-disable-next-line
   }, [])
 
+  const renderFilters = (filters, status) => {
+    if (status === "loading") {
+      return <option>Загрузка элементов</option>
+    } else if (status === "error") {
+      return <option>Ошибка загрузки</option>
+    }
+
+    if (filters && filters.length > 0) {
+      return filters.map(({ filter, label }) => {
+        if (filter === 'all') return;
+
+        return <option key={filter} value={filter}>{label}</option>
+      })
+    }
+  }
+
+  const onSubmitHandler = (e) => {
+    e.preventDefault();
+
+    const newHero = {
+      id: uuidv4(),
+      name: heroName,
+      description: heroDescription,
+      element: heroElement
+    }
+
+    request("http://localhost:3001/heroes", 'POST', JSON.stringify(newHero))
+      .then(res => console.log(res, 'Отправка успешна'))
+      .then(dispatch(heroCreated(newHero)))
+      .catch(err => console.log(err));
+
+
+    setHeroName('');
+    setHeroDescription('');
+    setHeroElement('');
+  }
   return (
-    <form className="border p-4 shadow-lg rounded">
+    <form onSubmit={onSubmitHandler} className="border p-4 shadow-lg rounded">
       <div className="mb-3">
         <label htmlFor="name" className="form-label fs-4">Имя нового героя</label>
         <input
@@ -38,7 +80,9 @@ const HeroesAddForm = () => {
           name="name"
           className="form-control"
           id="name"
-          placeholder="Как меня зовут?" />
+          placeholder="Как меня зовут?"
+          value={heroName}
+          onChange={(e) => setHeroName(e.target.value)} />
       </div>
 
       <div className="mb-3">
@@ -49,6 +93,8 @@ const HeroesAddForm = () => {
           className="form-control"
           id="text"
           placeholder="Что я умею?"
+          value={heroDescription}
+          onChange={(e) => setHeroDescription(e.target.value)}
           style={{ "height": '130px' }} />
       </div>
 
@@ -58,12 +104,11 @@ const HeroesAddForm = () => {
           required
           className="form-select"
           id="element"
-          name="element">
+          name="element"
+          value={heroElement}
+          onChange={(e) => setHeroElement(e.target.value)}>
           <option >Я владею элементом...</option>
-          <option value="fire">Огонь</option>
-          <option value="water">Вода</option>
-          <option value="wind">Ветер</option>
-          <option value="earth">Земля</option>
+          {renderFilters(filters, filtersLoadingStatus)}
         </select>
       </div>
 

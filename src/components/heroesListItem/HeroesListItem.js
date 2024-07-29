@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { deleteHeroe } from "../../actions";
+import { deleteHero } from "../../actions";
 
 const HeroesListItem = ({ id, name, description, element }) => {
 
@@ -41,7 +41,7 @@ const HeroesListItem = ({ id, name, description, element }) => {
           type="button"
           className="btn-close btn-close"
           aria-label="Close"
-          onClick={() => { dispatch(deleteHeroe(id)) }}></button>
+          onClick={() => { dispatch(deleteHero(id)) }}></button>
       </span>
     </li>
   )
