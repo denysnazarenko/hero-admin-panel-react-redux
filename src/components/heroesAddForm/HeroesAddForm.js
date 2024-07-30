@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { filtersFetching, filtersFetched, filtersFetchingError, heroCreated } from '../../actions';
 import { v4 as uuidv4 } from "uuid";
-import Spinner from '../spinner/Spinner';
 
 // Задача для этого компонента:
 // Реализовать создание нового героя с введенными данными. Он должен попадать
@@ -70,6 +69,7 @@ const HeroesAddForm = () => {
     setHeroDescription('');
     setHeroElement('');
   }
+  
   return (
     <form onSubmit={onSubmitHandler} className="border p-4 shadow-lg rounded">
       <div className="mb-3">

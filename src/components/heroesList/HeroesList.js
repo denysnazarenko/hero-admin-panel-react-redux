@@ -12,7 +12,7 @@ import Spinner from '../spinner/Spinner';
 // Удаление идет и с json файла при помощи метода DELETE
 
 const HeroesList = () => {
-  const { heroes, heroesLoadingStatus, deleteHeroId } = useSelector(state => state);
+  const { heroes, heroesLoadingStatus, deleteHeroId, filterActive } = useSelector(state => state);
   const dispatch = useDispatch();
   const { request } = useHttp();
 
@@ -23,7 +23,7 @@ const HeroesList = () => {
       .catch(() => dispatch(heroesFetchingError()))
 
     // eslint-disable-next-line
-  }, []);
+  }, [filterActive]);
 
   useEffect(() => {
     if (deleteHeroId !== '') {
